@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <title>Loja - Carrinho</title>
+
+</head>
+
+<body>
+
+  <h1>Produto: Livro de Cypress</h1>
+
+  <button id="btn-add">Adicionar ao Carrinho</button>
+
+  <p id="mensagem"></p>
+
+
+
+  <script>
+
+    const btn = document.getElementById('btn-add');
+
+    const msg = document.getElementById('mensagem');
+
+
+
+    btn.addEventListener('click', () => {
+
+      const produto = "Livro de Cypress";
+
+      document.cookie = "carrinho_token=carrinho456";
+
+      localStorage.setItem("itens_carrinho", JSON.stringify([produto]));
+
+      msg.textContent = "Produto adicionado com sucesso!";
+
+    });
+
+
+
+    // Verifica se já há itens no carrinho
+
+    window.addEventListener('load', () => {
+
+      const itens = JSON.parse(localStorage.getItem("itens_carrinho") || "[]");
+
+      if (itens.length > 0) {
+
+        document.getElementById('mensagem').textContent = `Carrinho com ${itens.length} item(ns).`;
+
+      }
+
+    });
+
+  </script>
+
+</body>
+
+</html>
