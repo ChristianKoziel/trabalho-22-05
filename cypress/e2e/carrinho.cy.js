@@ -1,37 +1,71 @@
-describe('Teste de Carrinho - E-commerce', () => {
+describe('Testes da aplicação MyPreferencesApp', () => {
+  const baseUrl = 'http://127.0.0.1:5500/Backup'; // URL do GoLive
 
   beforeEach(() => {
-    cy.visit('http://localhost:8080'); 
+    cy.clearCookies();
+    cy.clearLocalStorage();
   });
 
-  it('Adiciona produto ao carrinho e verifica cookie, localStorage e persistência', () => {
-    cy.get('#btn-add').click();
+  it('1. Login com usuário e senha válidos', () => {
+    cy.visit(`${baseUrl}/index.html`);
 
-    cy.getCookie('carrinho_token').should('exist')
-      .and((cookie) => {
-        expect(cookie.value).to.equal('carrinho456');
-      });
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+    cy.get('#loginBtn').click();
 
+    cy.url().should('include', '/dashboard.html');
+    cy.contains('Bem-vindo, admin!').should('be.visible');
+  });
+
+  it('2. Verifica se o cookie de sessão foi criado após login', () => {
+    cy.visit(`${baseUrl}/index.html`);
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+    cy.get('#loginBtn').click();
+
+    cy.getCookie('session_id').should('exist').and('have.property', 'value', 'abc123');
+  });
+
+  it('3. Alternar tema e verificar persistência no localStorage', () => {
+    // Passo extra: fazer login antes para garantir acesso ao dashboard
+    cy.visit(`${baseUrl}/index.html`);
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+    cy.get('#loginBtn').click();
+
+    // Agora estamos no dashboard, alterna tema
+    cy.get('#toggleTheme').click();
 
     cy.window().then((win) => {
-      const itens = JSON.parse(win.localStorage.getItem('itens_carrinho'));
-      expect(itens).to.include('Livro de Cypress');
+      expect(win.localStorage.getItem('theme')).to.eq('dark');
     });
 
     cy.reload();
-    cy.contains('Carrinho com 1 item(ns).');
+    cy.get('body').should('have.class', 'dark');
   });
 
-  it('Reconhece carrinho ativo com cookie e localStorage definidos manualmente', () => {
-    cy.setCookie('carrinho_token', 'carrinho456');
+  it('4. Verifica navegação entre abas: Perfil e Configurações', () => {
+    cy.visit(`${baseUrl}/index.html`);
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+    cy.get('#loginBtn').click();
 
-    cy.window().then((win) => {
-      win.localStorage.setItem('itens_carrinho', JSON.stringify(['Livro de Cypress']));
-    });
+    cy.get('#perfilBtn').click();
+    cy.contains('Nome: admin').should('be.visible');
 
-    cy.reload();
-
-    cy.contains('Carrinho com 1 item(ns).');
+    cy.get('#configBtn').click();
+    cy.contains('Preferências do usuário').should('be.visible');
   });
 
+  it('5. Logout deve apagar cookie e redirecionar para login', () => {
+    cy.visit(`${baseUrl}/index.html`);
+    cy.get('#username').type('admin');
+    cy.get('#password').type('admin123');
+    cy.get('#loginBtn').click();
+
+    cy.get('#logoutBtn').click();
+
+    cy.url().should('include', '/index.html');
+    cy.getCookie('session_id').should('not.exist');
+  });
 });

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard - MyPreferencesApp</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      transition: background 0.3s, color 0.3s;
+      background-color: white;
+      color: black;
+    }
+
+    body.dark {
+      background-color: #222;
+      color: #eee;
+    }
+
+    .navbar a {
+      margin-right: 15px;
+    }
+
+    .container {
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <a href="#" id="perfilBtn">Perfil</a>
+    <a href="#" id="configBtn">Configurações</a>
+    <button id="toggleTheme">Alternar Tema</button>
+    <button id="logoutBtn">Sair</button>
+  </div>
+
+  <div class="container">
+    <h1>Bem-vindo, admin!</h1>
+    <div id="conteudo">
+      <p>Escolha uma opção acima.</p>
+    </div>
+  </div>
+
+  <script>
+    if (!document.cookie.includes("session_id")) {
+      window.location.href = "index.html";
+    }
+
+    const conteudo = document.getElementById("conteudo");
+
+    document.getElementById("perfilBtn").addEventListener("click", () => {
+      conteudo.innerHTML = "<h2>Página de Perfil</h2><p>Nome: admin</p>";
+    });
+
+    document.getElementById("configBtn").addEventListener("click", () => {
+      conteudo.innerHTML = "<h2>Configurações</h2><p>Preferências do usuário</p>";
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      window.location.href = "index.html";
+    });
+
+    document.getElementById("toggleTheme").addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    }
+  </script>
+</body>
+</html>

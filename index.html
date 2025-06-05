@@ -1,63 +1,60 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - MyPreferencesApp</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: white;
+      color: black;
+      transition: background 0.3s, color 0.3s;
+    }
 
-  <meta charset="UTF-8">
+    body.dark {
+      background-color: #222;
+      color: #eee;
+    }
 
-  <title>Loja - Carrinho</title>
+    .container {
+      max-width: 400px;
+      margin: 100px auto;
+      text-align: center;
+    }
 
+    input, button {
+      padding: 8px;
+      margin: 5px;
+      width: 100%;
+    }
+  </style>
 </head>
-
 <body>
-
-  <h1>Produto: Livro de Cypress</h1>
-
-  <button id="btn-add">Adicionar ao Carrinho</button>
-
-  <p id="mensagem"></p>
-
-
+  <div class="container">
+    <h1>Login</h1>
+    <input id="username" placeholder="Usuário" />
+    <input id="password" type="password" placeholder="Senha" />
+    <button id="loginBtn">Entrar</button>
+  </div>
 
   <script>
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    }
 
-    const btn = document.getElementById('btn-add');
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
 
-    const msg = document.getElementById('mensagem');
-
-
-
-    btn.addEventListener('click', () => {
-
-      const produto = "Livro de Cypress";
-
-      document.cookie = "carrinho_token=carrinho456";
-
-      localStorage.setItem("itens_carrinho", JSON.stringify([produto]));
-
-      msg.textContent = "Produto adicionado com sucesso!";
-
-    });
-
-
-
-    // Verifica se já há itens no carrinho
-
-    window.addEventListener('load', () => {
-
-      const itens = JSON.parse(localStorage.getItem("itens_carrinho") || "[]");
-
-      if (itens.length > 0) {
-
-        document.getElementById('mensagem').textContent = `Carrinho com ${itens.length} item(ns).`;
-
+      if (user === 'admin' && pass === 'admin123') {
+        document.cookie = "session_id=abc123; path=/";
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Usuário ou senha inválidos");
       }
-
     });
-
   </script>
-
 </body>
-
 </html>
